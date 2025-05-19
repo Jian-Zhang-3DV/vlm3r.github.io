@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VLM-3R: Vision-Language Models Augmented with Instruction-Aligned 3D Reconstruction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            color: #333; /* Dark gray for body text */
+            text-align: justify;
+            background-color: #f4f7f6; /* Light gray-ish green background */
+            overflow-x: hidden;
+            position: relative;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .header-wrapper {
+            /* New color theme: Shades of blue/teal */
+            background: linear-gradient(-210deg, #003973 0%, #005f8d 65%, #008ea0 85%, #00bfa0 100%);
+            color: #e0f7fa; /* Light cyan for text on dark background */
+            padding: 60px 0; /* Increased padding */
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+            background-attachment: fixed; /* Parallax effect */
+            /* Added for flowing background */
+            background-size: 200% 200%; 
+            animation: flowGradient 5s ease-in-out infinite;
+        }
+        .header-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+        }
+        .header-wrapper h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            color: #ffffff;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .header-wrapper .subtitle {
+            font-size: 1.4em;
+            margin-bottom: 25px;
+            padding: 0 20px;
+            color: #cce7ff;
+            /* Added for typewriter cursor */
+            display: inline-block; /* Or block, depending on layout needs */
+            overflow: hidden; /* Ensures the text does not extend beyond the animation */
+            /* border-right: .15em solid orange; /* The typwriter cursor - will be controlled by JS */
+            /* white-space: nowrap; /* Keeps the content on a single line */
+            /* letter-spacing: .15em; /* Adjust as needed */
+            /* animation: 
+                blinking-cursor .75s step-end infinite; */
+        }
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px; /* Increased gap */
+        }
+        .teaser-image-container {
+            margin: 25px 0;
+            text-align: center;
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        .teaser-image-container img {
+            max-width: 95%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+        }
+        .teaser-image-container:hover img {
+            transform: translateZ(20px) rotateX(5deg);
+        }
+        .resource-buttons {
+            margin-top: 25px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        .resource-buttons .button {
+            display: inline-block;
+            padding: 14px 28px;
+            background-color: rgba(224, 247, 250, 0.1);
+            color: #ffffff;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            backdrop-filter: blur(5px);
+        }
+        .resource-buttons .button:hover {
+            background-color: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.5);
+        }
+        .authors-section {
+            text-align: center;
+            margin: -40px auto 40px;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            min-width: 0;
+            position: relative;
+            z-index: 3;
+            max-width: 800px;
+        }
+        .authors-section h3 {
+            margin-bottom: 15px;
+            color: #003973; /* Dark blue */
+        }
+        .authors-section p {
+            margin: 8px 0;
+            font-size: 1em; /* Standardized font size */
+        }
+        .section {
+            margin: 60px 0;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
+        }
+        .section h2 {
+            color: #003973; /* Dark blue for section titles */
+            border-bottom: 3px solid #0077b6; /* Teal border */
+            padding-bottom: 12px;
+            margin-bottom: 25px;
+            font-size: 2em; /* Larger section titles */
+            position: relative;
+        }
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: #00bfa0;
+        }
+        .section:hover h2::after {
+            width: 100px;
+        }
+        .section h3 {
+            color: #005f8d; /* Medium blue for sub-titles */
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .section p, .section ul, .section blockquote {
+            margin-bottom: 1.2em; /* Increased spacing */
+            font-size: 1.05em;
+        }
+        .section ul {
+            list-style-position: inside;
+            padding-left: 20px;
+        }
+        .section li {
+            margin-bottom: 0.6em;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #e6f7ff 0%, #f0f9ff 100%);
+            border-left: 5px solid #0077b6;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        .highlight-box:hover {
+            transform: translateX(5px);
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin: 25px 0;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 1;
+        }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* ADDED for new hover effect */
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+        .feature-card:hover::before {
+            transform: translateX(100%);
+        }
+        .feature-card:hover { /* MODIFIED for new hover effect */
+            box-shadow: 0 0 25px 8px rgba(0, 191, 160, 0.5); /* Glowing border, color from theme */
+            transform: scale(1.03); /* Slight zoom */
+        }
+        .feature-card h3 {
+            margin-top: 0;
+            color: #005f8d; /* Medium blue for card titles */
+            font-size: 1.25em;
+        }
+        .feature-card h3 .fas { /* Icon styling */
+            margin-right: 10px;
+            color: #008ea0; /* Teal for icons */
+        }
+        .citation-section {
+            background-color: #e9ecef;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 40px;
+            font-family: 'Courier New', Courier, monospace;
+            position: relative;
+            z-index: 1;
+        }
+        .citation-section pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #dde7f0; /* Lighter blue for pre background */
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #c5d9e8;
+        }
+        .figure-caption {
+            text-align: center;
+            font-style: italic;
+            color: #555; /* Default color, good for light backgrounds */
+            margin-top: 12px;
+            font-size: 0.95em;
+        }
+        .header-wrapper .figure-caption {
+            color: #e0f7fa; /* Specific color for captions within the dark header */
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 30px 0;
+            font-size: 0.85em;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.10);
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+        }
+        table th, table td {
+            border: 1px solid #cce7ff;
+            padding: 12px 15px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+        table tr:hover td {
+            background-color: rgba(0, 119, 182, 0.05);
+        }
+        table caption {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        table th {
+            background-color: #003973; /* 更深的蓝色背景 */
+            color: #ffffff; /* 白色文字 */
+            font-weight: 600; /* 稍微加粗 */
+            text-transform: uppercase; /* 大写字母 */
+            letter-spacing: 0.5px; /* 增加字母间距 */
+        }
+        table tr:nth-child(even) {
+            background-color: #f8fbff;
+        }
+        table tr:hover {
+            background-color: #e6f3ff;
+        }
+        /* 为不同类型的表头添加不同的背景色 */
+        table th[style*="background-color: #d4eaff"] {
+            background-color: #004d7a !important; /* 数值答案表头 */
+        }
+        table th[style*="background-color: #c8e6c9"] {
+            background-color: #005c4d !important; /* 多选题答案表头 */
+        }
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        .equation {
+            display: block;
+            text-align: center;
+            margin: 25px 0;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.15em;
+            padding: 15px;
+            background-color: #e9ecef; /* Light gray */
+            border-radius: 6px;
+            border: 1px solid #d1d9e0;
+        }
+        .key-innovations-section h2 { /* Changed from h3 for consistency */
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 30px;
+        }
+        @media (max-width: 768px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* Added for scroll animations - REMOVING OLD ONES AND ADDING NEW */
+        /* .fade-in-section, .is-visible, @keyframes fadeInDown, @keyframes fadeInUp will be removed */
+
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .scroll-animate.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Added for flowing header background */
+        @keyframes flowGradient {
+            0% {
+                background-position: 0% 0%;
+            }
+            50% {
+                background-position: 100% 100%;
+            }
+            100% {
+                background-position: 0% 0%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-wrapper">
+        <div class="container header-content">
+            <h1>VLM-3R: Vision-Language Models Augmented with Instruction-Aligned 3D Reconstruction</h1>
+            <p class="subtitle" id="typewriter-subtitle">A unified Vision-Language Model (VLM) framework integrating 3D reconstructive instruction tuning for deep spatial understanding from monocular video.</p>
+            
+            <div class="teaser-image-container scroll-animate">
+                <img src="imgs/teaser_00.jpg" alt="VLM-3R Overview"> 
+                <p class="figure-caption"><b>Figure: VLM-3R Overview.</b> Our framework (b) utilizes an end-to-end architecture to process video directly, unlike prior methods (a) that rely on explicit 3D data. This enables the model to understand spatial context, instance layout, and temporal dynamics, achieving leading performance on benchmarks (results in c).</p>
+            </div>
+
+            <div class="resource-buttons">
+                <a href="#abstract" class="button"><i class="fas fa-info-circle"></i> Abstract</a>
+                <a href="https://arxiv.org/abs/2403.xxxxx" class="button" target="_blank"><i class="fas fa-file-alt"></i> Paper (arXiv)</a>
+                <a href="[NeurIPS'25]VLM-3R/paper.pdf" class="button" target="_blank"><i class="fas fa-file-pdf"></i> PDF</a>
+                <a href="https://github.com/yourusername/VLM-3R" class="button" target="_blank"><i class="fab fa-github"></i> Code</a>
+                <a href="#datasets" class="button"><i class="fas fa-database"></i> Datasets & Benchmarks</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <section class="authors-section scroll-animate">
+            <h3>Authors</h3>
+            <p>
+                Author One<sup>1</sup>, Author Two<sup>2</sup>, Author Three<sup>1,2</sup>, ...
+            </p>
+            <p>
+                <sup>1</sup>Affiliation One (e.g., University Name, Research Lab)
+                <br>
+                <sup>2</sup>Affiliation Two (e.g., Company Name)
+            </p>
+            <p><a href="mailto:contact_email@example.com">contact_email@example.com</a></p>
+            <p><strong>NeurIPS 2025</strong> (To be presented)</p>
+        </section>
+
+        <section id="abstract" class="section scroll-animate">
+            <h2>Abstract</h2>
+            <p>The rapid advancement of Large Multimodal Models (LMMs) for 2D images and videos has motivated extending these models to understand 3D scenes, aiming for human-like visual-spatial intelligence. Nevertheless, achieving deep spatial understanding comparable to human capabilities poses significant challenges in model encoding and data acquisition. Existing methods frequently depend on external depth sensors for geometry capture or utilize off-the-shelf algorithms for pre-constructing 3D maps, thereby limiting their scalability, especially with prevalent monocular video inputs and for time-sensitive applications. In this work, we introduce VLM‑3R, a unified framework for Vision-Language Models (VLMs) that incorporates 3D Reconstructive instruction tuning. VLM‑3R processes monocular video frames by employing a geometry encoder to derive implicit 3D tokens that represent spatial understanding. Through the utilization of our Spatial-Visual–View Fusion technique and over 200K curated 3D reconstructive instruction tuning question-answer (QA) pairs, VLM‑3R effectively aligns real-world spatial context with language instructions. This enables the model to perform monocular 3D spatial assistance and embodied reasoning. To facilitate the evaluation of temporal reasoning capabilities, we introduce the Vision-Spatial-Temporal Intelligence benchmark, featuring over 138.6K QA pairs across five distinct tasks focused on evolving spatial relationships. Extensive experiments demonstrate that our model, VLM‑3R, not only promotes robust visual-spatial reasoning but is also capable of understanding 3D contextual changes over time, excelling in both accuracy and scalability.</p>
+        </section>
+
+        <section id="key-innovations" class="section key-innovations-section scroll-animate">
+            <h2>Key Innovations</h2>
+            <div class="feature-grid">
+                <div class="feature-card scroll-animate">
+                    <h3><i class="fas fa-cube"></i> End-to-End Monocular Video 3D Understanding</h3>
+                    <p>VLM-3R directly processes monocular RGB videos without needing external depth sensors or pre-built 3D maps, significantly enhancing scalability and practical applicability.</p>
+                </div>
+                <div class="feature-card scroll-animate">
+                    <h3><i class="fas fa-brain"></i> 3D Reconstructive Instruction Tuning</h3>
+                    <p>Instruction tuning with over 200K QA pairs enables the model to effectively align visual information with 3D spatial context and language instructions.</p>
+                </div>
+                <div class="feature-card scroll-animate">
+                    <h3><i class="fas fa-atom"></i> Spatial-Visual-View Fusion</h3>
+                    <p>A novel fusion mechanism integrates 3D geometric tokens, per-view camera tokens, and 2D appearance features for joint spatio-linguistic understanding.</p>
+                </div>
+                 <div class="feature-card scroll-animate">
+                    <h3><i class="fas fa-chart-line"></i> Vision-Spatial-Temporal Intelligence Benchmark (VSTI-Bench)</h3>
+                    <p>A new benchmark with over 138.6K QA pairs, specifically designed to evaluate the model's understanding of spatio-temporal relationships in dynamic 3D environments.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="architecture" class="section scroll-animate">
+            <h2>VLM-3R Architecture</h2>
+            <div style="text-align: center;">
+                <img src="imgs/arc_00.jpg" alt="VLM-3R Network Architecture Diagram" style="max-width: 85%; height: auto; border-radius: 8px; margin-bottom:10px;">
+                <p class="figure-caption"><b>Figure: Network Architecture.</b> VLM-3R takes monocular video and language instructions as input. The Visual Encoder coupled with the Spatial Encoder extracts frame-level appearance, camera view position, and globally aligned geometry. The Visual-Geometry Fusion module includes 2D-3D attention and a projection layer to integrate spatial context into latent tokens.</p>
+            </div>
+            <h3>Architectural Overview</h3>
+            <p>The core of VLM-3R is a pre-trained LMM, integrated with modules for deriving geometric encodings, camera view encodings, and visual features from the input video. These diverse inputs are then effectively fused with language representations via our proposed Spatial-Visual-View Fusion mechanism.</p>
+            
+            <h4>Key Components:</h4>
+            <ul>
+                <li><strong>3D Reconstructive Tokenization:</strong> Utilizes the pre-trained CUT3R model. It processes monocular video frame-by-frame, extracting implicit 3D reconstructive tokens (including rich 3D feature tokens and camera view tokens) that compactly encode the observed 3D geometry and camera perspective.</li>
+                <li><strong>Spatial-Visual-View Fusion:</strong> Employs a cross-attention mechanism to fuse the unified 3D representation (Z<sub>3D</sub>) with the VLM's native visual tokens (H<sub>v</sub>), generating 3D-aware visual tokens (H'<sub>v</sub>). These tokens then pass through a two-layer projector and are combined with language instruction tokens before being fed into the LMM's Transformer backbone.
+                    <div class="equation">H'<sub>v</sub> = softmax( (H<sub>v</sub>W<sub>Q</sub>)(Z<sub>3D</sub>W<sub>K</sub>)<sup>T</sup> / &radic;d<sub>k</sub> ) (Z<sub>3D</sub>W<sub>V</sub>)</div>
+                </li>
+                <li><strong>Training Objective & Fine-tuning Strategy:</strong> Adopts the same learning objective as LLaVA-NeXT-Video. Low-Rank Adaptation (LoRA) is used for efficient fine-tuning of the VLM, updating parameters within the 3D fusion attention block and projection layers.</li>
+            </ul>
+        </section>
+
+        <section id="datasets" class="section scroll-animate">
+            <h2>Datasets & Benchmarks</h2>
+            <div style="text-align: center;">
+                 <img src="imgs/data_stats_00.jpg" alt="VSTI-Bench Data Statistics Diagram" style="max-width: 80%; height: auto; border-radius: 8px; margin-bottom:10px;">
+                 <p class="figure-caption"><b>Figure: VS<i>Temporal</i>I-Bench Overview.</b> (a) Statistical distribution of QA pairs by primary categories (inner ring) and their sub-categories (outer ring). (b) Example QA pairs for different task types.</p>
+            </div>
+            <h3>Multimodal Spatial Instruction Data Generation</h3>
+            <p>We developed a scalable, automated data generation pipeline to instill robust spatial intelligence in LMMs. This pipeline produced:</p>
+            <ul>
+                <li>Over <strong>200,000</strong> general question-answer pairs for spatial reasoning from monocular video.</li>
+                <li><strong>4,225</strong> embodied route planning data instances generated using simulators.</li>
+            </ul>
+            <p>This data is derived from existing 3D datasets like ScanNet, ScanNet++, and ARKitScenes, processed via detailed spatio-temporal scene graphs to automatically generate QA pairs for tasks such as object counting, relative distance/direction, appearance order, object size, absolute distance, and room size.</p>
+
+            <h3>Vision-Spatial-Temporal Intelligence Benchmark (VSTI-Bench)</h3>
+            <p>To evaluate the understanding of dynamic 3D environments, we introduce VSTI-Bench. This benchmark contains approximately <strong>138,600</strong> QA pairs, distributed across three main categories: Camera Dynamics (49.6%), Camera-Object Interactions (38.4%), and Object Relative Position (12.0%). It is designed to assess LMMs' ability to perceive and reason about relative camera/object motion, dynamic object-camera relationships, and evolving spatial configurations.</p>
+            <h4>Evaluation Metrics</h4>
+            <p>For Multiple-Choice Answer (MCA) tasks, standard Accuracy (ACC) is used. For Numerical Answer (NA) tasks, Mean Relative Accuracy (MRA) is utilized:</p>
+            <div class="equation">MRA = (1/10) * &Sigma;<sub>&theta;&isin;{0.5,0.55,...,0.95}</sub> &#x1D7D9;(|&ycirc; - y|/y &lt; 1-&theta;)</div>
+        </section>
+
+        <section id="experiments" class="section scroll-animate">
+            <h2>Experimental Results</h2>
+            <h3>VSI-Bench Evaluation</h3>
+            <p>On VSI-Bench, VLM-3R performs as the top model among those with fewer than 7B parameters, even outperforming some 72B parameter models and proprietary systems. This highlights the effectiveness of its reconstructive instruction tuning. The integration of spatial encoding significantly boosts LMM capabilities in distance, size, and direction estimation tasks.</p>
+            <div class="table-container">
+                <table>
+                    <caption><b>Table 1: VSI-Bench Evaluation Results.</b> VLM-3R ranks first among open-sourced VLMs, showcasing the effectiveness of its reconstructive instruction tuning. This validates our model's spatial encoding significantly improves 3D understanding and reasoning, particularly in distance, size, direction, and spatial planning tasks. For each task within the open-sourced VLMs group, cells with a dark gray background (#A8A8A8) highlight the overall best-performing model; light gray (#E5E5E5) denotes the second-best open-source model. <sup>&dagger;</sup>Results on the VSI-Bench tiny set.</caption>
+                    <thead>
+                        <tr>
+                            <th>Methods</th>
+                            <th>Rank</th>
+                            <th>Avg.</th>
+                            <th style="background-color: #d4eaff;">Obj. Count</th>
+                            <th style="background-color: #d4eaff;">Abs. Dist.</th>
+                            <th style="background-color: #d4eaff;">Obj. Size</th>
+                            <th style="background-color: #d4eaff;">Room Size</th>
+                            <th style="background-color: #c8e6c9;">Rel. Dist.</th>
+                            <th style="background-color: #c8e6c9;">Rel. Dir.</th>
+                            <th style="background-color: #c8e6c9;">Route Plan</th>
+                            <th style="background-color: #c8e6c9;">Appr. Order</th>
+                        </tr>
+                        <tr>
+                            <th></th><th></th><th></th>
+                            <th colspan="4" style="background-color: #d4eaff; text-align:center;"><em>Numerical Answer</em></th>
+                            <th colspan="4" style="background-color: #c8e6c9; text-align:center;"><em>Multiple-Choice Answer</em></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background-color: #0039731A;"><td colspan="11"><em>Baseline</em></td></tr>
+                        <tr><td>Chance Level (Random)</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>25.0</td><td>36.1</td><td>28.3</td><td>25.0</td></tr>
+                        <tr><td>Chance Level (Frequency)</td><td>-</td><td>34.0</td><td>62.1</td><td>32.0</td><td>29.9</td><td>33.1</td><td>25.1</td><td>47.9</td><td>28.4</td><td>25.2</td></tr>
+                        <tr style="background-color: #0039731A;"><td colspan="11"><em>VSI-Bench Perf. (<sup>&dagger;</sup> = Tiny Set)</em></td></tr>
+                        <tr><td><sup>&dagger;</sup>Human Level</td><td>-</td><td>79.2</td><td>94.3</td><td>47.0</td><td>60.4</td><td>45.9</td><td>94.7</td><td>95.8</td><td>95.8</td><td>100.0</td></tr>
+                        <tr><td><sup>&dagger;</sup>Gemini-1.5 Flash</td><td>-</td><td>45.7</td><td>50.8</td><td>33.6</td><td>56.5</td><td>45.2</td><td>48.0</td><td>39.8</td><td>32.7</td><td>59.2</td></tr>
+                        <tr><td><sup>&dagger;</sup>Gemini-1.5 Pro</td><td>-</td><td>48.8</td><td>49.6</td><td>28.8</td><td>58.6</td><td>49.4</td><td>46.0</td><td>48.1</td><td>42.0</td><td>68.0</td></tr>
+                        <tr><td><sup>&dagger;</sup>Gemini-2.0 Flash</td><td>-</td><td>45.4</td><td>52.4</td><td>30.6</td><td>66.7</td><td>31.8</td><td>56.0</td><td>46.3</td><td>24.5</td><td>55.1</td></tr>
+                        <tr style="background-color: #0039731A;"><td colspan="11"><em>Proprietary Models (API)</em></td></tr>
+                        <tr><td>GPT-4o</td><td style="background-color: #D9FFD8;">3</td><td>34.0</td><td>46.2</td><td>5.3</td><td>43.8</td><td>38.2</td><td>37.0</td><td>41.3</td><td>31.5</td><td>28.5</td></tr>
+                        <tr><td>Gemini-1.5 Flash</td><td style="background-color: #A6FFA3;">2</td><td>42.1</td><td>49.8</td><td>30.8</td><td>53.5</td><td style="background-color: #A8A8A8;">54.4</td><td>37.7</td><td>41.0</td><td>31.5</td><td>37.8</td></tr>
+                        <tr><td>Gemini-1.5 Pro</td><td style="background-color: #51DA4C;">1</td><td>45.4</td><td style="background-color: #A8A8A8;">56.2</td><td style="background-color: #A8A8A8;">30.9</td><td style="background-color: #A8A8A8;">64.1</td><td>43.6</td><td style="background-color: #A8A8A8;">51.3</td><td style="background-color: #A8A8A8;">46.3</td><td style="background-color: #A8A8A8;">36.0</td><td>34.6</td></tr>
+                        <tr style="background-color: #0039731A;"><td colspan="11"><em>Open-Sourced VLMs</em></td></tr>
+                        <tr><td>LLaVA-OneVision-0.5B</td><td>11</td><td>28.0</td><td>46.1</td><td>28.4</td><td>15.4</td><td>28.3</td><td>28.9</td><td>36.9</td><td>34.5</td><td>5.8</td></tr>
+                        <tr><td>InternVL2-2B</td><td>12</td><td>27.4</td><td>21.8</td><td>24.9</td><td>22.0</td><td>35.0</td><td>33.8</td><td style="background-color: #E5E5E5;">44.2</td><td>30.5</td><td>7.1</td></tr>
+                        <tr><td>LLaVA-NeXT-Video-7B</td><td>5</td><td>35.6</td><td>48.5</td><td>14.0</td><td>47.8</td><td>24.2</td><td style="background-color: #E5E5E5;">43.5</td><td>42.4</td><td>34.0</td><td>30.6</td></tr>
+                        <tr><td>InternVL2-8B</td><td>6</td><td>34.6</td><td>23.1</td><td style="background-color: #E5E5E5;">28.7</td><td>48.2</td><td style="background-color: #E5E5E5;">39.8</td><td>36.7</td><td>30.7</td><td>29.9</td><td>39.6</td></tr>
+                        <tr><td>LLaVA-OneVision-7B</td><td>7</td><td>32.4</td><td>47.7</td><td>20.2</td><td>47.4</td><td>12.3</td><td>42.5</td><td>35.2</td><td>29.4</td><td>24.4</td></tr>
+                        <tr><td>LongVA-7B</td><td>9</td><td>29.2</td><td>38.0</td><td>16.6</td><td>38.9</td><td>22.2</td><td>33.1</td><td>43.3</td><td>25.4</td><td>15.7</td></tr>
+                        <tr><td>VILA-1.5-8B</td><td>10</td><td>28.9</td><td>17.4</td><td>21.8</td><td>50.3</td><td>18.8</td><td>32.1</td><td>34.8</td><td>31.0</td><td>24.8</td></tr>
+                        <tr><td>LongVILA-8B</td><td>13</td><td>21.6</td><td>29.1</td><td>9.1</td><td>16.7</td><td>0.0</td><td>29.6</td><td>30.7</td><td>32.5</td><td>25.5</td></tr>
+                        <tr><td>InternVL2-40B</td><td>4</td><td>36.0</td><td>34.9</td><td>26.9</td><td>46.5</td><td>31.8</td><td>42.1</td><td>32.2</td><td>34.0</td><td>39.6</td></tr>
+                        <tr><td>VILA-1.5-40B</td><td>8</td><td>31.2</td><td>22.4</td><td>24.8</td><td>48.7</td><td>22.7</td><td>40.5</td><td>25.7</td><td>31.5</td><td>32.9</td></tr>
+                        <tr><td>LLaVA-NeXT-Video-72B</td><td style="background-color: #A6FFA3;">2</td><td>40.9</td><td style="background-color: #E5E5E5;">48.9</td><td>22.8</td><td>57.4</td><td>35.3</td><td>42.4</td><td>36.7</td><td style="background-color: #E5E5E5;">35.0</td><td style="background-color: #A8A8A8;">48.6</td></tr>
+                        <tr><td>LLaVA-OneVision-72B</td><td style="background-color: #D9FFD8;">3</td><td>40.2</td><td>43.5</td><td>23.9</td><td style="background-color: #E5E5E5;">57.6</td><td>37.5</td><td>42.5</td><td>39.9</td><td>32.5</td><td style="background-color: #E5E5E5;">44.6</td></tr>
+                        <tr><td><strong>VLM-3R (7B)</strong></td><td style="background-color: #51DA4C;"><strong>1</strong></td><td><strong>60.9</strong></td><td style="background-color: #A8A8A8;">70.2</td><td style="background-color: #A8A8A8;">49.4</td><td style="background-color: #A8A8A8;">69.2</td><td style="background-color: #A8A8A8;">67.1</td><td style="background-color: #A8A8A8;">65.4</td><td style="background-color: #A8A8A8;">80.5</td><td style="background-color: #A8A8A8;">45.4</td><td>40.1</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>VSTI-Bench Evaluation</h3>
+            <p>On VSTI-Bench, VLM-3R also demonstrates strong capabilities in understanding spatial context and temporal movement, enabling it to effectively answer questions and make inferences about video content.</p>
+            <div class="table-container">
+                 <table>
+                    <caption><b>Table 2: VS<i>Temporal</i>I-Bench Evaluation Results.</b> VLM-3R leads comprehensively on this benchmark, showcasing its strong capabilities in spatio-temporal reasoning. Dark gray (#A8A8A8) highlights the overall best-performing model; light gray (#E5E5E5) denotes the second-best.</caption>
+                    <thead>
+                        <tr>
+                            <th>Methods</th>
+                            <th>Rank</th>
+                            <th>Avg.</th>
+                            <th style="background-color: #d4eaff;">Cam-Obj Abs. Dist.</th>
+                            <th style="background-color: #d4eaff;">Cam. Displace.</th>
+                            <th style="background-color: #c8e6c9;">Cam. Mov. Dir.</th>
+                            <th style="background-color: #c8e6c9;">Obj-Obj Rel. Pos.</th>
+                            <th style="background-color: #c8e6c9;">Cam-Obj Rel. Dist.</th>
+                        </tr>
+                         <tr>
+                            <th></th><th></th><th></th>
+                            <th colspan="2" style="background-color: #d4eaff; text-align:center;"><em>Numerical Answer</em></th>
+                            <th colspan="3" style="background-color: #c8e6c9; text-align:center;"><em>Multiple-Choice Answer</em></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background-color: #0039731A;"><td colspan="8"><em>Baseline</em></td></tr>
+                        <tr><td>Chance Level (Random)</td><td>-</td><td>-</td><td>-</td><td>-</td><td>36.1</td><td>50.0</td><td>36.1</td></tr>
+                        <tr><td>Chance Level (Frequency)</td><td>-</td><td>27.4</td><td>5.4</td><td>6.2</td><td>40.7</td><td>52.2</td><td>32.4</td></tr>
+                        <tr style="background-color: #0039731A;"><td colspan="8"><em>Human Performance</em></td></tr>
+                        <tr><td><sup>&dagger;</sup>Human Level</td><td>-</td><td>77.0</td><td>51.4</td><td>46.8</td><td>95.1</td><td>97.5</td><td>94.3</td></tr>
+                        <tr style="background-color: #0039731A;"><td colspan="8"><em>Proprietary Models (API)</em></td></tr>
+                        <tr><td>GPT-4o</td><td style="background-color: #51DA4C;">1</td><td>38.2</td><td>29.5</td><td>23.4</td><td>37.3</td><td>58.1</td><td>42.5</td></tr>
+                        <tr><td>Gemini-1.5 Flash</td><td style="background-color: #A6FFA3;">2</td><td>32.1</td><td>28.5</td><td>20.9</td><td>24.4</td><td>52.6</td><td>33.9</td></tr>
+                        <tr style="background-color: #0039731A;"><td colspan="8"><em>Open-Sourced VLMs</em></td></tr>
+                        <tr><td>LLaVA-OneVision-0.5B</td><td>9</td><td>36.9</td><td>16.5</td><td style="background-color: #E5E5E5;">32.4</td><td>46.1</td><td>50.5</td><td>39.0</td></tr>
+                        <tr><td>InternVL2-2B</td><td>7</td><td>38.1</td><td>17.7</td><td>27.8</td><td>43.0</td><td>54.9</td><td>47.2</td></tr>
+                        <tr><td>LLaVA-NeXT-Video-7B</td><td>5</td><td>40.0</td><td>28.2</td><td>1.8</td><td style="background-color: #E5E5E5;">49.8</td><td>64.7</td><td style="background-color: #E5E5E5;">55.6</td></tr>
+                        <tr><td>LLaVA-OneVision-7B</td><td>4</td><td>41.7</td><td>29.9</td><td>19.3</td><td>47.5</td><td>62.1</td><td>49.8</td></tr>
+                        <tr><td>LongVA-7B</td><td>10</td><td>32.3</td><td>13.5</td><td>5.1</td><td>43.7</td><td>57.9</td><td>41.2</td></tr>
+                        <tr><td>InternVL2-8B</td><td style="background-color: #D9FFD8;">3</td><td>43.5</td><td style="background-color: #E5E5E5;">32.9</td><td>13.5</td><td>48.0</td><td>68.0</td><td>55.0</td></tr>
+                        <tr><td>LongVILA-8B</td><td>11</td><td>30.5</td><td>20.0</td><td>11.6</td><td>35.4</td><td>52.3</td><td>33.4</td></tr>
+                        <tr><td>VILA-1.5-8B</td><td>8</td><td>37.3</td><td>30.1</td><td>27.3</td><td>42.2</td><td>50.4</td><td>36.7</td></tr>
+                        <tr><td>VILA-1.5-40B</td><td>6</td><td>38.2</td><td>28.2</td><td>15.7</td><td>28.8</td><td>65.4</td><td>53.0</td></tr>
+                        <tr><td>LLaVA-NeXT-Video-72B</td><td style="background-color: #A6FFA3;">2</td><td style="background-color: #E5E5E5;">44.0</td><td>32.3</td><td>10.5</td><td>48.1</td><td style="background-color: #E5E5E5;">78.3</td><td>50.9</td></tr>
+                        <tr><td><strong>VLM-3R (7B)</strong></td><td style="background-color: #51DA4C;"><strong>1</strong></td><td style="background-color: #A8A8A8;">58.8</td><td style="background-color: #A8A8A8;">39.4</td><td style="background-color: #A8A8A8;">39.6</td><td style="background-color: #A8A8A8;">60.6</td><td style="background-color: #A8A8A8;">86.5</td><td style="background-color: #A8A8A8;">68.6</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Ablation Studies</h3>
+            <p>Ablation studies confirm that both geometric token fusion and camera token fusion are critical to VLM-3R's performance, especially in tasks reliant on scene structure and directional awareness. The overall 3D fusion mechanism also shows clear performance benefits.</p>
+            <div class="table-container">
+                <table>
+                    <caption><b>Table 3: Ablation Study of VLM-3R Components on VSI-Bench.</b> Scores indicate percentage accuracy or MRA. The <strong>VLM-3R (Full Model)</strong> row is highlighted.</caption>
+                     <thead>
+                        <tr>
+                            <th>Methods</th>
+                            <th>Rank</th>
+                            <th>Avg.</th>
+                            <th style="background-color: #d4eaff;">Obj. Count</th>
+                            <th style="background-color: #d4eaff;">Abs. Dist.</th>
+                            <th style="background-color: #d4eaff;">Obj. Size</th>
+                            <th style="background-color: #d4eaff;">Room Size</th>
+                            <th style="background-color: #c8e6c9;">Rel. Dist.</th>
+                            <th style="background-color: #c8e6c9;">Rel. Dir.</th>
+                            <th style="background-color: #c8e6c9;">Route Plan</th>
+                            <th style="background-color: #c8e6c9;">Appr. Order</th>
+                        </tr>
+                        <tr>
+                            <th></th><th></th><th></th>
+                            <th colspan="4" style="background-color: #d4eaff; text-align:center;"><em>Numerical Answer</em></th>
+                            <th colspan="4" style="background-color: #c8e6c9; text-align:center;"><em>Multiple-Choice Answer</em></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>LLaVA-NeXT-Video ft (w/o C&G Tok.)</td><td>4</td><td>57.74</td><td>70.64</td><td>43.67</td><td>70.82</td><td>63.72</td><td>64.93</td><td>68.93</td><td>40.72</td><td>38.51</td></tr>
+                        <tr><td>VLM-3R w/o Cam. Tok.</td><td>3</td><td>59.09</td><td>69.50</td><td>48.66</td><td>68.47</td><td>65.21</td><td>62.82</td><td>78.86</td><td>42.78</td><td>36.41</td></tr>
+                        <tr><td>VLM-3R w/o Geo. Tok.</td><td>2</td><td>59.46</td><td>70.30</td><td>49.27</td><td>68.36</td><td>66.01</td><td>61.27</td><td>81.35</td><td>41.75</td><td>37.38</td></tr>
+                        <tr style="background-color: #005f8d20;"><td><strong>VLM-3R (Full Model)</strong></td><td><strong>1</strong></td><td><strong>60.90</strong></td><td>70.16</td><td>49.38</td><td>69.15</td><td>67.12</td><td>65.35</td><td>80.52</td><td>45.36</td><td>40.13</td></tr>
+                    </tbody>
+                </table>
+            </div>
+             <div class="highlight-box">
+                <p><strong>Key Findings from Ablations:</strong></p>
+                <ul>
+                    <li>Geometric tokens are crucial for understanding scene structure and object properties.</li>
+                    <li>Camera tokens are vital for correctly interpreting egocentric viewpoints and distinguishing directions.</li>
+                    <li>The overall 3D fusion mechanism (combining visual, geometric, and camera tokens) significantly outperforms baselines relying only on 2D visual features.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="citation-section scroll-animate">
+            <h2>Citation</h2>
+            <pre><code>@article{vlm3r2025yourname,
+  title={VLM‑3R: Vision-Language Models Augmented with Instruction‑Aligned 3D Reconstruction},
+  author={Author One and Author Two and Author Three and et al.}, 
+  journal={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2025}
+}</code></pre>
+        </section>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        // Using smooth behavior for scrolling
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Intersection Observer for scroll animations
+            const animatedElements = document.querySelectorAll('.scroll-animate');
+            const observerOptions = {
+                root: null, // relative to document viewport
+                rootMargin: '0px',
+                threshold: 0.1 // 10% of item is visible
+            };
+
+            const observer = new IntersectionObserver((entries, observerInstance) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observerInstance.unobserve(entry.target); // Stop observing once visible
+                    }
+                });
+            }, observerOptions);
+
+            animatedElements.forEach(el => {
+                observer.observe(el);
+            });
+
+            // Typewriter effect for the subtitle
+            const subtitleElement = document.getElementById('typewriter-subtitle');
+            if (subtitleElement) {
+                const fullText = subtitleElement.textContent;
+                subtitleElement.textContent = ''; // Clear initial text
+                let charIndex = 0;
+                // subtitleElement.style.borderRight = '.15em solid #cce7ff'; // REMOVED: Initial cursor
+
+                function typeCharacter() {
+                    if (charIndex < fullText.length) {
+                        subtitleElement.textContent += fullText.charAt(charIndex);
+                        charIndex++;
+                        setTimeout(typeCharacter, 50); // CHANGED: Typing speed back to 50ms
+                    } else {
+                        // Typing finished
+                        // subtitleElement.style.animation = 'blinking-cursor .75s step-end infinite;'; // REMOVED: Blinking cursor animation
+                    }
+                }
+                
+                // REMOVED: Dynamic keyframes for blinking cursor
+                /*
+                const styleSheet = document.styleSheets[0];
+                const keyframes = 
+                  `@keyframes blinking-cursor {
+                      from, to { border-right-color: transparent; }
+                      50% { border-right-color: #cce7ff; }
+                  }`;
+                if (styleSheet) {
+                    try {
+                        styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
+                    } catch (e) {
+                        console.warn("Could not insert blinking-cursor keyframes:", e);
+                    }
+                } else {
+                    const styleEl = document.createElement('style');
+                    styleEl.innerHTML = keyframes;
+                    document.head.appendChild(styleEl);
+                }
+                */
+
+                setTimeout(typeCharacter, 500); // Delay before typing starts
+            }
+        });
+    </script>
+</body>
+</html>
