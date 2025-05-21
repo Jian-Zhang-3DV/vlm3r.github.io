@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VLM-3R: Vision-Language Models Augmented with Instruction-Aligned 3D Reconstruction</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.css">
+
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -35,7 +39,7 @@
             z-index: 2;
             background-attachment: fixed; /* Parallax effect */
             /* Added for flowing background */
-            background-size: 200% 200%; 
+            background-size: 200% 200%;
             animation: flowGradient 5s ease-in-out infinite;
         }
         .header-wrapper::before {
@@ -62,11 +66,6 @@
             /* Added for typewriter cursor */
             display: inline-block; /* Or block, depending on layout needs */
             overflow: hidden; /* Ensures the text does not extend beyond the animation */
-            /* border-right: .15em solid orange; /* The typwriter cursor - will be controlled by JS */
-            /* white-space: nowrap; /* Keeps the content on a single line */
-            /* letter-spacing: .15em; /* Adjust as needed */
-            /* animation: 
-                blinking-cursor .75s step-end infinite; */
         }
         .header-content {
             display: flex;
@@ -212,7 +211,7 @@
             position: relative;
             overflow: hidden;
             z-index: 1;
-            transition: transform 0.3s ease, box-shadow 0.3s ease; /* ADDED for new hover effect */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .feature-card::before {
             content: '';
@@ -228,9 +227,9 @@
         .feature-card:hover::before {
             transform: translateX(100%);
         }
-        .feature-card:hover { /* MODIFIED for new hover effect */
-            box-shadow: 0 0 25px 8px rgba(0, 191, 160, 0.5); /* Glowing border, color from theme */
-            transform: scale(1.03); /* Slight zoom */
+        .feature-card:hover {
+            box-shadow: 0 0 25px 8px rgba(0, 191, 160, 0.5);
+            transform: scale(1.03);
         }
         .feature-card h3 {
             margin-top: 0;
@@ -261,12 +260,12 @@
         .figure-caption {
             text-align: center;
             font-style: italic;
-            color: #555; /* Default color, good for light backgrounds */
+            color: #555;
             margin-top: 12px;
             font-size: 0.95em;
         }
         .header-wrapper .figure-caption {
-            color: #e0f7fa; /* Specific color for captions within the dark header */
+            color: #e0f7fa;
         }
         table {
             width: 100%;
@@ -294,11 +293,11 @@
             text-align: center;
         }
         table th {
-            background-color: #003973; /* 更深的蓝色背景 */
-            color: #ffffff; /* 白色文字 */
-            font-weight: 600; /* 稍微加粗 */
-            text-transform: uppercase; /* 大写字母 */
-            letter-spacing: 0.5px; /* 增加字母间距 */
+            background-color: #003973;
+            color: #ffffff;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         table tr:nth-child(even) {
             background-color: #f8fbff;
@@ -306,12 +305,11 @@
         table tr:hover {
             background-color: #e6f3ff;
         }
-        /* 为不同类型的表头添加不同的背景色 */
         table th[style*="background-color: #d4eaff"] {
-            background-color: #004d7a !important; /* 数值答案表头 */
+            background-color: #004d7a !important;
         }
         table th[style*="background-color: #c8e6c9"] {
-            background-color: #005c4d !important; /* 多选题答案表头 */
+            background-color: #005c4d !important;
         }
         .table-container {
             overflow-x: auto;
@@ -324,11 +322,11 @@
             font-family: 'Times New Roman', Times, serif;
             font-size: 1.15em;
             padding: 15px;
-            background-color: #e9ecef; /* Light gray */
+            background-color: #e9ecef;
             border-radius: 6px;
             border: 1px solid #d1d9e0;
         }
-        .key-innovations-section h2 { /* Changed from h3 for consistency */
+        .key-innovations-section h2 {
             text-align: center;
             font-size: 2em;
             margin-bottom: 30px;
@@ -338,8 +336,6 @@
                 grid-template-columns: 1fr;
             }
         }
-        /* Added for scroll animations - REMOVING OLD ONES AND ADDING NEW */
-        /* .fade-in-section, .is-visible, @keyframes fadeInDown, @keyframes fadeInUp will be removed */
 
         .scroll-animate {
             opacity: 0;
@@ -363,7 +359,6 @@
             }
         }
 
-        /* Added for flowing header background */
         @keyframes flowGradient {
             0% {
                 background-position: 0% 0%;
@@ -375,6 +370,114 @@
                 background-position: 0% 0%;
             }
         }
+
+        .qa-subsection {
+            margin-top: 30px;
+            padding-top: 20px;
+             border-top: 1px dashed #0077b6;
+        }
+        .qa-subsection h3 {
+            text-align: center;
+            color: #005f8d;
+            margin-bottom: 25px;
+        }
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .preview { /* Copied from Thinking_in_Space_files/style.css for directness */
+            cursor: pointer;
+            transition: opacity 0.2s, box-shadow 0.2s;
+            opacity: 0.5; /* 50% transparent */
+            height: 60px; /* Adjusted height */
+            width: auto; /* Auto width to maintain aspect ratio */
+            margin-right: 10px;
+            margin-left: 10px;
+            border-radius: 5px; /* Added for softer edges */
+            border: 2px solid transparent; /* For active state */
+        }
+        div .preview-video-active, /* From Thinking in Space CSS */
+        .preview:hover {
+            opacity: 1.0; /* Fully opaque on hover */
+            transform: scale(1.05); /* Slight zoom on hover */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Shadow effect on hover */
+        }
+        .preview-video-active { /* From Thinking in Space CSS - specific style for active */
+             opacity: 1.0 !important;
+             border: 2px solid #00bfa0 !important; /* Highlight active preview */
+             box-shadow: 0 0 10px rgba(0, 191, 160, 0.5) !important;
+        }
+         /* Ensure .l-body from Distill doesn't over-constrain width if used */
+        .qa-subsection .l-body {
+            grid-column: page; /* Or text, depending on desired width. Page is wider. */
+        }
+
+        .video-container {
+            text-align: center;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        .video-container video {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .video-label {
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #005f8d;
+        }
+        .speed-reminder {
+            margin-top: 8px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .video-qa {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .frames-preview {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .frame-item {
+            position: relative;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .frame-item:hover {
+            transform: scale(1.05);
+        }
+        .frame-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .frame-number {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 2px 4px;
+            font-size: 10px;
+            border-radius: 2px;
+        }
+
     </style>
 </head>
 <body>
@@ -382,9 +485,9 @@
         <div class="container header-content">
             <h1>VLM-3R: Vision-Language Models Augmented with Instruction-Aligned 3D Reconstruction</h1>
             <p class="subtitle" id="typewriter-subtitle">A unified Vision-Language Model (VLM) framework integrating 3D reconstructive instruction tuning for deep spatial understanding from monocular video.</p>
-            
+
             <div class="teaser-image-container scroll-animate">
-                <img src="imgs/teaser_00.jpg" alt="VLM-3R Overview"> 
+                <img src="imgs/teaser_00.jpg" alt="VLM-3R Overview">
                 <p class="figure-caption"><b>Figure: VLM-3R Overview.</b> Our framework (b) utilizes an end-to-end architecture to process video directly, unlike prior methods (a) that rely on explicit 3D data. This enables the model to understand spatial context, instance layout, and temporal dynamics, achieving leading performance on benchmarks (results in c).</p>
             </div>
 
@@ -439,23 +542,22 @@
                 </div>
             </div>
         </section>
-        
+
         <section id="architecture" class="section scroll-animate">
             <h2>VLM-3R Architecture</h2>
             <div style="text-align: center;">
                 <img src="imgs/arc_00.jpg" alt="VLM-3R Network Architecture Diagram" style="max-width: 85%; height: auto; border-radius: 8px; margin-bottom:10px;">
-                <p class="figure-caption"><b>Figure: Network Architecture.</b> VLM-3R takes monocular video and language instructions as input. The Visual Encoder coupled with the Spatial Encoder extracts frame-level appearance, camera view position, and globally aligned geometry. The Visual-Geometry Fusion module includes 2D-3D attention and a projection layer to integrate spatial context into latent tokens.</p>
+                <p class="figure-caption"><b>Figure: Network Architecture.</b> VLM-3R takes monocular video and language instructions as input...</p>
             </div>
             <h3>Architectural Overview</h3>
-            <p>The core of VLM-3R is a pre-trained LMM, integrated with modules for deriving geometric encodings, camera view encodings, and visual features from the input video. These diverse inputs are then effectively fused with language representations via our proposed Spatial-Visual-View Fusion mechanism.</p>
-            
+            <p>The core of VLM-3R is a pre-trained LMM, integrated with modules for deriving geometric encodings...</p>
             <h4>Key Components:</h4>
             <ul>
-                <li><strong>3D Reconstructive Tokenization:</strong> Utilizes the pre-trained CUT3R model. It processes monocular video frame-by-frame, extracting implicit 3D reconstructive tokens (including rich 3D feature tokens and camera view tokens) that compactly encode the observed 3D geometry and camera perspective.</li>
-                <li><strong>Spatial-Visual-View Fusion:</strong> Employs a cross-attention mechanism to fuse the unified 3D representation (Z<sub>3D</sub>) with the VLM's native visual tokens (H<sub>v</sub>), generating 3D-aware visual tokens (H'<sub>v</sub>). These tokens then pass through a two-layer projector and are combined with language instruction tokens before being fed into the LMM's Transformer backbone.
+                <li><strong>3D Reconstructive Tokenization:</strong> Utilizes the pre-trained CUT3R model...</li>
+                <li><strong>Spatial-Visual-View Fusion:</strong> Employs a cross-attention mechanism...
                     <div class="equation">H'<sub>v</sub> = softmax( (H<sub>v</sub>W<sub>Q</sub>)(Z<sub>3D</sub>W<sub>K</sub>)<sup>T</sup> / &radic;d<sub>k</sub> ) (Z<sub>3D</sub>W<sub>V</sub>)</div>
                 </li>
-                <li><strong>Training Objective & Fine-tuning Strategy:</strong> Adopts the same learning objective as LLaVA-NeXT-Video. Low-Rank Adaptation (LoRA) is used for efficient fine-tuning of the VLM, updating parameters within the 3D fusion attention block and projection layers.</li>
+                <li><strong>Training Objective & Fine-tuning Strategy:</strong> Adopts the same learning objective as LLaVA-NeXT-Video...</li>
             </ul>
         </section>
 
@@ -478,7 +580,527 @@
             <h4>Evaluation Metrics</h4>
             <p>For Multiple-Choice Answer (MCA) tasks, standard Accuracy (ACC) is used. For Numerical Answer (NA) tasks, Mean Relative Accuracy (MRA) is utilized:</p>
             <div class="equation">MRA = (1/10) * &Sigma;<sub>&theta;&isin;{0.5,0.55,...,0.95}</sub> &#x1D7D9;(|&ycirc; - y|/y &lt; 1-&theta;)</div>
-        </section>
+
+            <div class="qa-subsection scroll-animate">
+                <h3>VSTI-Bench: Interactive Examples</h3>
+                <div class="l-body">
+                    <div class="preview-container">
+                        <img id="VLM3Rvideo1Preview" class="preview preview-video-active" src="vsti_examples/thumbnails/scene0568_00_thumb.jpg" alt="VSTI-Bench Example 1: Camera Displacement" onclick="switchVideo('VLM3R', 'VLM3Rvideo1Container', 'VLM3Rvideo1Preview')">
+                        <img id="VLM3Rvideo2Preview" class="preview" src="vsti_examples/thumbnails/scene0304_00_thumb.jpg" alt="VSTI-Bench Example 2: Camera Movement Direction" onclick="switchVideo('VLM3R', 'VLM3Rvideo2Container', 'VLM3Rvideo2Preview')">
+                        <img id="VLM3Rvideo3Preview" class="preview" src="vsti_examples/thumbnails/scene0488_00_thumb.jpg" alt="VSTI-Bench Example 3: Camera-Object Absolute Distance" onclick="switchVideo('VLM3R', 'VLM3Rvideo3Container', 'VLM3Rvideo3Preview')">
+                        <img id="VLM3Rvideo4Preview" class="preview" src="vsti_examples/thumbnails/scene0591_01_thumb.jpg" alt="VSTI-Bench Example 4: Camera-Object Relative Distance" onclick="switchVideo('VLM3R', 'VLM3Rvideo4Container', 'VLM3Rvideo4Preview')">
+                        <img id="VLM3Rvideo5Preview" class="preview" src="vsti_examples/thumbnails/scene0578_00_thumb.jpg" alt="VSTI-Bench Example 5: Object-Object Relative Position" onclick="switchVideo('VLM3R', 'VLM3Rvideo5Container', 'VLM3Rvideo5Preview')">
+                    </div>
+
+                    <div id="VLM3Rvideo1Container" class="video-container" style="display: block;">
+                        <div class="video-label">Task Type: Camera Displacement</div>
+                        <video class="video-music" controls preload="metadata" playsinline onerror="handleVideoError(this)" onloadeddata="handleVideoLoaded(this)">
+                            <source src="./vsti_examples/videos/scene0568_00.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="speed-reminder"><i class="fas fa-info-circle"></i>Video at 2x speed. Adjust controls.</div>
+                        <div class="frames-preview">
+                            <div class="frame-item" onclick="seekToFrame(this, 0)">
+                                <img src="vsti_examples/frames/scene0568_00/000000.jpg" alt="Frame 0">
+                                <span class="frame-number">0</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 1)">
+                                <img src="vsti_examples/frames/scene0568_00/000053.jpg" alt="Frame 1">
+                                <span class="frame-number">1</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 2)">
+                                <img src="vsti_examples/frames/scene0568_00/000106.jpg" alt="Frame 2">
+                                <span class="frame-number">2</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 3)">
+                                <img src="vsti_examples/frames/scene0568_00/000159.jpg" alt="Frame 3">
+                                <span class="frame-number">3</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 4)">
+                                <img src="vsti_examples/frames/scene0568_00/000212.jpg" alt="Frame 4">
+                                <span class="frame-number">4</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 5)">
+                                <img src="vsti_examples/frames/scene0568_00/000266.jpg" alt="Frame 5">
+                                <span class="frame-number">5</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 6)">
+                                <img src="vsti_examples/frames/scene0568_00/000319.jpg" alt="Frame 6">
+                                <span class="frame-number">6</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 7)">
+                                <img src="vsti_examples/frames/scene0568_00/000372.jpg" alt="Frame 7">
+                                <span class="frame-number">7</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 8)">
+                                <img src="vsti_examples/frames/scene0568_00/000425.jpg" alt="Frame 8">
+                                <span class="frame-number">8</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 9)">
+                                <img src="vsti_examples/frames/scene0568_00/000479.jpg" alt="Frame 9">
+                                <span class="frame-number">9</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 10)">
+                                <img src="vsti_examples/frames/scene0568_00/000532.jpg" alt="Frame 10">
+                                <span class="frame-number">10</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 11)">
+                                <img src="vsti_examples/frames/scene0568_00/000585.jpg" alt="Frame 11">
+                                <span class="frame-number">11</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 12)">
+                                <img src="vsti_examples/frames/scene0568_00/000638.jpg" alt="Frame 12">
+                                <span class="frame-number">12</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 13)">
+                                <img src="vsti_examples/frames/scene0568_00/000691.jpg" alt="Frame 13">
+                                <span class="frame-number">13</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 14)">
+                                <img src="vsti_examples/frames/scene0568_00/000745.jpg" alt="Frame 14">
+                                <span class="frame-number">14</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 15)">
+                                <img src="vsti_examples/frames/scene0568_00/000798.jpg" alt="Frame 15">
+                                <span class="frame-number">15</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 16)">
+                                <img src="vsti_examples/frames/scene0568_00/000851.jpg" alt="Frame 16">
+                                <span class="frame-number">16</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 17)">
+                                <img src="vsti_examples/frames/scene0568_00/000904.jpg" alt="Frame 17">
+                                <span class="frame-number">17</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 18)">
+                                <img src="vsti_examples/frames/scene0568_00/000958.jpg" alt="Frame 18">
+                                <span class="frame-number">18</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 19)">
+                                <img src="vsti_examples/frames/scene0568_00/001011.jpg" alt="Frame 19">
+                                <span class="frame-number">19</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 20)">
+                                <img src="vsti_examples/frames/scene0568_00/001064.jpg" alt="Frame 20">
+                                <span class="frame-number">20</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 21)">
+                                <img src="vsti_examples/frames/scene0568_00/001117.jpg" alt="Frame 21">
+                                <span class="frame-number">21</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 22)">
+                                <img src="vsti_examples/frames/scene0568_00/001170.jpg" alt="Frame 22">
+                                <span class="frame-number">22</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 23)">
+                                <img src="vsti_examples/frames/scene0568_00/001224.jpg" alt="Frame 23">
+                                <span class="frame-number">23</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 24)">
+                                <img src="vsti_examples/frames/scene0568_00/001277.jpg" alt="Frame 24">
+                                <span class="frame-number">24</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 25)">
+                                <img src="vsti_examples/frames/scene0568_00/001330.jpg" alt="Frame 25">
+                                <span class="frame-number">25</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 26)">
+                                <img src="vsti_examples/frames/scene0568_00/001383.jpg" alt="Frame 26">
+                                <span class="frame-number">26</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 27)">
+                                <img src="vsti_examples/frames/scene0568_00/001437.jpg" alt="Frame 27">
+                                <span class="frame-number">27</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 28)">
+                                <img src="vsti_examples/frames/scene0568_00/001490.jpg" alt="Frame 28">
+                                <span class="frame-number">28</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 29)">
+                                <img src="vsti_examples/frames/scene0568_00/001543.jpg" alt="Frame 29">
+                                <span class="frame-number">29</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 30)">
+                                <img src="vsti_examples/frames/scene0568_00/001596.jpg" alt="Frame 30">
+                                <span class="frame-number">30</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 31)">
+                                <img src="vsti_examples/frames/scene0568_00/001650.jpg" alt="Frame 31">
+                                <span class="frame-number">31</span>
+                            </div>
+                        </div>
+                        <div class="video-qa">
+                            <div class="qa-item">
+                                <p><strong>Question 1:</strong> Approximately how far (in meters) did the camera move between frame 6 and frame 14 of 32?</p>
+                                <p><strong>Options:</strong></p>
+                                <ul style="list-style-type: none; padding-left: 0; display: flex; justify-content: space-evenly; text-align: left; max-width: 80%; margin: 0 auto;">
+                                    <li><input type="radio" name="vlm3r_vsti_qa1_options" value="A"> A. 2.2</li>
+                                    <li><input type="radio" name="vlm3r_vsti_qa1_options" value="B"> B. 0.5</li>
+                                    <li><input type="radio" name="vlm3r_vsti_qa1_options" value="C"> C. 1.7</li>
+                                    <li><input type="radio" name="vlm3r_vsti_qa1_options" value="D"> D. 2.7</li>
+                                </ul>
+                                <div id="vlm3r-vsti-answer-1" style="display:none; text-align: center; margin-top: 10px;">
+                                    <p><strong style="color: green;">GT:</strong> C (1.7m) | <strong style="color: red;">Model:</strong> (Your Model's Answer)</p>
+                                </div>
+                                <p class="click-hint" style="cursor:pointer; margin-top: 10px;" onclick="toggleAnswer('vlm3r-vsti-answer-1', this)">
+                                    <i class="fas fa-eye"></i> Click for Answer
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="VLM3Rvideo2Container" class="video-container" style="display: none;">
+                        <div class="video-label">Task Type: Camera Movement Direction</div>
+                        <video class="video-music" controls preload="metadata" playsinline onerror="handleVideoError(this)" onloadeddata="handleVideoLoaded(this)">
+                            <source src="./vsti_examples/videos/scene0304_00_encoded.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="speed-reminder"><i class="fas fa-info-circle"></i>Video at 2x speed. Adjust controls.</div>
+                        <div class="frames-preview">
+                            <div class="frame-item" onclick="seekToFrame(this, 0)">
+                                <img src="vsti_examples/frames/scene0304_00/000000.jpg" alt="Frame 0">
+                                <span class="frame-number">0</span>
+                            </div>
+                            <!-- 添加其他31帧，格式相同 -->
+                            <div class="frame-item" onclick="seekToFrame(this, 31)">
+                                <img src="vsti_examples/frames/scene0304_00/001772.jpg" alt="Frame 31">
+                                <span class="frame-number">31</span>
+                            </div>
+                        </div>
+                        <div class="video-qa">
+                            <div class="qa-item">
+                                <p><strong>Question 2:</strong> During the sequence between frame 15 and frame 18 of 32, what was the primary consistent direction of the camera's movement relative to its orientation at the start? The options are Right, Backward, Left, and Forward.</p>
+                                <p><strong>Options:</strong></p>
+                                <ul style="list-style-type: none; padding-left: 0; display: flex; justify-content: space-evenly; text-align: left; max-width: 80%; margin: 0 auto;">
+                                    <li><input type="radio" name="vlm3r_vsti_qa2_options" value="A"> A. Right</li>
+                                    <li><input type="radio" name="vlm3r_vsti_qa2_options" value="B"> B. Backward</li>
+                                    <li><input type="radio" name="vlm3r_vsti_qa2_options" value="C"> C. Left</li>
+                                    <li><input type="radio" name="vlm3r_vsti_qa2_options" value="D"> D. Forward</li>
+                                </ul>
+                                <div id="vlm3r-vsti-answer-2" style="display:none; text-align: center; margin-top: 10px;">
+                                     <p><strong style="color: green;">GT:</strong> A (Right) | <strong style="color: red;">Model:</strong> (Your Model's Answer)</p>
+                                </div>
+                                <p class="click-hint" style="cursor:pointer; margin-top: 10px;" onclick="toggleAnswer('vlm3r-vsti-answer-2', this)">
+                                    <i class="fas fa-eye"></i> Click for Answer
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="VLM3Rvideo3Container" class="video-container" style="display: none;">
+                        <div class="video-label">Task Type: Object-Object Relative Position</div>
+                        <video class="video-music" controls preload="metadata" playsinline onerror="handleVideoError(this)" onloadeddata="handleVideoLoaded(this)">
+                            <source src="./vsti_examples/videos/scene0578_00.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="speed-reminder"><i class="fas fa-info-circle"></i>Video at 2x speed. Adjust controls.</div>
+                        <div class="frames-preview">
+                            <div class="frame-item" onclick="seekToFrame(this, 0)">
+                                <img src="vsti_examples/frames/scene0578_00/000000.jpg" alt="Frame 0">
+                                <span class="frame-number">0</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 1)">
+                                <img src="vsti_examples/frames/scene0578_00/000047.jpg" alt="Frame 1">
+                                <span class="frame-number">1</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 2)">
+                                <img src="vsti_examples/frames/scene0578_00/000095.jpg" alt="Frame 2">
+                                <span class="frame-number">2</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 3)">
+                                <img src="vsti_examples/frames/scene0578_00/000142.jpg" alt="Frame 3">
+                                <span class="frame-number">3</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 4)">
+                                <img src="vsti_examples/frames/scene0578_00/000190.jpg" alt="Frame 4">
+                                <span class="frame-number">4</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 5)">
+                                <img src="vsti_examples/frames/scene0578_00/000237.jpg" alt="Frame 5">
+                                <span class="frame-number">5</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 6)">
+                                <img src="vsti_examples/frames/scene0578_00/000285.jpg" alt="Frame 6">
+                                <span class="frame-number">6</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 7)">
+                                <img src="vsti_examples/frames/scene0578_00/000332.jpg" alt="Frame 7">
+                                <span class="frame-number">7</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 8)">
+                                <img src="vsti_examples/frames/scene0578_00/000380.jpg" alt="Frame 8">
+                                <span class="frame-number">8</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 9)">
+                                <img src="vsti_examples/frames/scene0578_00/000427.jpg" alt="Frame 9">
+                                <span class="frame-number">9</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 10)">
+                                <img src="vsti_examples/frames/scene0578_00/000475.jpg" alt="Frame 10">
+                                <span class="frame-number">10</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 11)">
+                                <img src="vsti_examples/frames/scene0578_00/000522.jpg" alt="Frame 11">
+                                <span class="frame-number">11</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 12)">
+                                <img src="vsti_examples/frames/scene0578_00/000570.jpg" alt="Frame 12">
+                                <span class="frame-number">12</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 13)">
+                                <img src="vsti_examples/frames/scene0578_00/000617.jpg" alt="Frame 13">
+                                <span class="frame-number">13</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 14)">
+                                <img src="vsti_examples/frames/scene0578_00/000665.jpg" alt="Frame 14">
+                                <span class="frame-number">14</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 15)">
+                                <img src="vsti_examples/frames/scene0578_00/000712.jpg" alt="Frame 15">
+                                <span class="frame-number">15</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 16)">
+                                <img src="vsti_examples/frames/scene0578_00/000760.jpg" alt="Frame 16">
+                                <span class="frame-number">16</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 17)">
+                                <img src="vsti_examples/frames/scene0578_00/000807.jpg" alt="Frame 17">
+                                <span class="frame-number">17</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 18)">
+                                <img src="vsti_examples/frames/scene0578_00/000855.jpg" alt="Frame 18">
+                                <span class="frame-number">18</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 19)">
+                                <img src="vsti_examples/frames/scene0578_00/000902.jpg" alt="Frame 19">
+                                <span class="frame-number">19</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 20)">
+                                <img src="vsti_examples/frames/scene0578_00/000950.jpg" alt="Frame 20">
+                                <span class="frame-number">20</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 21)">
+                                <img src="vsti_examples/frames/scene0578_00/000997.jpg" alt="Frame 21">
+                                <span class="frame-number">21</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 22)">
+                                <img src="vsti_examples/frames/scene0578_00/001045.jpg" alt="Frame 22">
+                                <span class="frame-number">22</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 23)">
+                                <img src="vsti_examples/frames/scene0578_00/001092.jpg" alt="Frame 23">
+                                <span class="frame-number">23</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 24)">
+                                <img src="vsti_examples/frames/scene0578_00/001140.jpg" alt="Frame 24">
+                                <span class="frame-number">24</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 25)">
+                                <img src="vsti_examples/frames/scene0578_00/001187.jpg" alt="Frame 25">
+                                <span class="frame-number">25</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 26)">
+                                <img src="vsti_examples/frames/scene0578_00/001235.jpg" alt="Frame 26">
+                                <span class="frame-number">26</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 27)">
+                                <img src="vsti_examples/frames/scene0578_00/001282.jpg" alt="Frame 27">
+                                <span class="frame-number">27</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 28)">
+                                <img src="vsti_examples/frames/scene0578_00/001330.jpg" alt="Frame 28">
+                                <span class="frame-number">28</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 29)">
+                                <img src="vsti_examples/frames/scene0578_00/001377.jpg" alt="Frame 29">
+                                <span class="frame-number">29</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 30)">
+                                <img src="vsti_examples/frames/scene0578_00/001425.jpg" alt="Frame 30">
+                                <span class="frame-number">30</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 31)">
+                                <img src="vsti_examples/frames/scene0578_00/001472.jpg" alt="Frame 31">
+                                <span class="frame-number">31</span>
+                            </div>
+                        </div>
+                        <div class="video-qa">
+                            <div class="qa-item">
+                                <p><strong>Question 3:</strong> What is the approximate distance (in meters) between the camera (or the person filming) and the nearest point of the refrigerator in frame 10 of 32?</p>
+                                <p><strong>Options:</strong></p>
+                                <ul style="list-style-type: none; padding-left: 0; display: flex; justify-content: space-evenly; text-align: left; max-width: 80%; margin: 0 auto;">
+                                    <li><input type="radio" name="vlm3r_vsti_qa3_options" value="A"> A. 2.4</li>
+                                    <li><input type="radio" name="vlm3r_vsti_qa3_options" value="B"> B. 0.9</li>
+                                    <li><input type="radio" name="vlm3r_vsti_qa3_options" value="C"> C. 1.8</li>
+                                    <li><input type="radio" name="vlm3r_vsti_qa3_options" value="D"> D. 1.4</li>
+                                </ul>
+                                <div id="vlm3r-vsti-answer-3" style="display:none; text-align: center; margin-top: 10px;">
+                                     <p><strong style="color: green;">GT:</strong> C (1.8m) | <strong style="color: red;">Model:</strong> (Your Model's Answer)</p>
+                                </div>
+                                <p class="click-hint" style="cursor:pointer; margin-top: 10px;" onclick="toggleAnswer('vlm3r-vsti-answer-3', this)">
+                                    <i class="fas fa-eye"></i> Click for Answer
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="VLM3Rvideo4Container" class="video-container" style="display: none;">
+                        <div class="video-label">Task Type: Camera Displacement</div>
+                        <video class="video-music" controls preload="metadata" playsinline onerror="handleVideoError(this)" onloadeddata="handleVideoLoaded(this)">
+                            <source src="./vsti_examples/videos/scene0488_00.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="speed-reminder"><i class="fas fa-info-circle"></i>Video at 2x speed. Adjust controls.</div>
+                        <div class="frames-preview">
+                            <div class="frame-item" onclick="seekToFrame(this, 0)">
+                                <img src="vsti_examples/frames/scene0578_00/000000.jpg" alt="Frame 0">
+                                <span class="frame-number">0</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 1)">
+                                <img src="vsti_examples/frames/scene0578_00/000057.jpg" alt="Frame 1">
+                                <span class="frame-number">1</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 2)">
+                                <img src="vsti_examples/frames/scene0578_00/000114.jpg" alt="Frame 2">
+                                <span class="frame-number">2</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 3)">
+                                <img src="vsti_examples/frames/scene0578_00/000171.jpg" alt="Frame 3">
+                                <span class="frame-number">3</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 4)">
+                                <img src="vsti_examples/frames/scene0578_00/000228.jpg" alt="Frame 4">
+                                <span class="frame-number">4</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 5)">
+                                <img src="vsti_examples/frames/scene0578_00/000285.jpg" alt="Frame 5">
+                                <span class="frame-number">5</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 6)">
+                                <img src="vsti_examples/frames/scene0578_00/000342.jpg" alt="Frame 6">
+                                <span class="frame-number">6</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 7)">
+                                <img src="vsti_examples/frames/scene0578_00/000400.jpg" alt="Frame 7">
+                                <span class="frame-number">7</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 8)">
+                                <img src="vsti_examples/frames/scene0578_00/000457.jpg" alt="Frame 8">
+                                <span class="frame-number">8</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 9)">
+                                <img src="vsti_examples/frames/scene0578_00/000514.jpg" alt="Frame 9">
+                                <span class="frame-number">9</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 10)">
+                                <img src="vsti_examples/frames/scene0578_00/000571.jpg" alt="Frame 10">
+                                <span class="frame-number">10</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 11)">
+                                <img src="vsti_examples/frames/scene0578_00/000628.jpg" alt="Frame 11">
+                                <span class="frame-number">11</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 12)">
+                                <img src="vsti_examples/frames/scene0578_00/000685.jpg" alt="Frame 12">
+                                <span class="frame-number">12</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 13)">
+                                <img src="vsti_examples/frames/scene0578_00/000743.jpg" alt="Frame 13">
+                                <span class="frame-number">13</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 14)">
+                                <img src="vsti_examples/frames/scene0578_00/000800.jpg" alt="Frame 14">
+                                <span class="frame-number">14</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 15)">
+                                <img src="vsti_examples/frames/scene0578_00/000857.jpg" alt="Frame 15">
+                                <span class="frame-number">15</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 16)">
+                                <img src="vsti_examples/frames/scene0578_00/000914.jpg" alt="Frame 16">
+                                <span class="frame-number">16</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 17)">
+                                <img src="vsti_examples/frames/scene0578_00/000971.jpg" alt="Frame 17">
+                                <span class="frame-number">17</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 18)">
+                                <img src="vsti_examples/frames/scene0578_00/001028.jpg" alt="Frame 18">
+                                <span class="frame-number">18</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 19)">
+                                <img src="vsti_examples/frames/scene0578_00/001086.jpg" alt="Frame 19">
+                                <span class="frame-number">19</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 20)">
+                                <img src="vsti_examples/frames/scene0578_00/001143.jpg" alt="Frame 20">
+                                <span class="frame-number">20</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 21)">
+                                <img src="vsti_examples/frames/scene0578_00/001200.jpg" alt="Frame 21">
+                                <span class="frame-number">21</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 22)">
+                                <img src="vsti_examples/frames/scene0578_00/001257.jpg" alt="Frame 22">
+                                <span class="frame-number">22</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 23)">
+                                <img src="vsti_examples/frames/scene0578_00/001314.jpg" alt="Frame 23">
+                                <span class="frame-number">23</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 24)">
+                                <img src="vsti_examples/frames/scene0578_00/001371.jpg" alt="Frame 24">
+                                <span class="frame-number">24</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 25)">
+                                <img src="vsti_examples/frames/scene0578_00/001429.jpg" alt="Frame 25">
+                                <span class="frame-number">25</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 26)">
+                                <img src="vsti_examples/frames/scene0578_00/001486.jpg" alt="Frame 26">
+                                <span class="frame-number">26</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 27)">
+                                <img src="vsti_examples/frames/scene0578_00/001543.jpg" alt="Frame 27">
+                                <span class="frame-number">27</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 28)">
+                                <img src="vsti_examples/frames/scene0578_00/001600.jpg" alt="Frame 28">
+                                <span class="frame-number">28</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 29)">
+                                <img src="vsti_examples/frames/scene0578_00/001657.jpg" alt="Frame 29">
+                                <span class="frame-number">29</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 30)">
+                                <img src="vsti_examples/frames/scene0578_00/001714.jpg" alt="Frame 30">
+                                <span class="frame-number">30</span>
+                            </div>
+                            <div class="frame-item" onclick="seekToFrame(this, 31)">
+                                <img src="vsti_examples/frames/scene0578_00/001772.jpg" alt="Frame 31">
+                                <span class="frame-number">31</span>
+                            </div>
+                        </div>
+                        <div class="video-qa">
+                            <div class="qa-item">
+                                <p><strong>Question 5:</strong> In frame 32 of 32, relative to the camera, is trash bin [Near/Far] compared to backpack?</p>
+                                <p><strong>Options:</strong></p>
+                                <ul style="list-style-type: none; padding-left: 0; display: flex; justify-content: space-evenly; text-align: left; max-width: 60%; margin: 0 auto;">
+                                    <li><input type="radio" name="vlm3r_vsti_qa5_options" value="A"> A. Near</li>
+                                    <li><input type="radio" name="vlm3r_vsti_qa5_options" value="B"> B. Far</li>
+                                </ul>
+                                <div id="vlm3r-vsti-answer-5" style="display:none; text-align: center; margin-top: 10px;">
+                                    <p><strong style="color: green;">GT:</strong> B (Far) | <strong style="color: red;">Model:</strong> (Your Model's Answer)</p>
+                                </div>
+                                <p class="click-hint" style="cursor:pointer; margin-top: 10px;" onclick="toggleAnswer('vlm3r-vsti-answer-5', this)">
+                                    <i class="fas fa-eye"></i> Click for Answer
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </section>
 
         <section id="experiments" class="section scroll-animate">
             <h2>Experimental Results</h2>
@@ -486,12 +1108,10 @@
             <p>On VSI-Bench, VLM-3R performs as the top model among those with fewer than 7B parameters, even outperforming some 72B parameter models and proprietary systems. This highlights the effectiveness of its reconstructive instruction tuning. The integration of spatial encoding significantly boosts LMM capabilities in distance, size, and direction estimation tasks.</p>
             <div class="table-container">
                 <table>
-                    <caption><b>Table 1: VSI-Bench Evaluation Results.</b> VLM-3R ranks first among open-sourced VLMs, showcasing the effectiveness of its reconstructive instruction tuning. This validates our model's spatial encoding significantly improves 3D understanding and reasoning, particularly in distance, size, direction, and spatial planning tasks. For each task within the open-sourced VLMs group, cells with a dark gray background (#A8A8A8) highlight the overall best-performing model; light gray (#E5E5E5) denotes the second-best open-source model. <sup>&dagger;</sup>Results on the VSI-Bench tiny set.</caption>
+                    <caption><b>Table 1: VSI-Bench Evaluation Results.</b> VLM-3R ranks first among open-sourced VLMs...</caption>
                     <thead>
                         <tr>
-                            <th>Methods</th>
-                            <th>Rank</th>
-                            <th>Avg.</th>
+                            <th>Methods</th><th>Rank</th><th>Avg.</th>
                             <th style="background-color: #d4eaff;">Obj. Count</th>
                             <th style="background-color: #d4eaff;">Abs. Dist.</th>
                             <th style="background-color: #d4eaff;">Obj. Size</th>
@@ -542,12 +1162,10 @@
             <p>On VSTI-Bench, VLM-3R also demonstrates strong capabilities in understanding spatial context and temporal movement, enabling it to effectively answer questions and make inferences about video content.</p>
             <div class="table-container">
                  <table>
-                    <caption><b>Table 2: VS<i>Temporal</i>I-Bench Evaluation Results.</b> VLM-3R leads comprehensively on this benchmark, showcasing its strong capabilities in spatio-temporal reasoning. Dark gray (#A8A8A8) highlights the overall best-performing model; light gray (#E5E5E5) denotes the second-best.</caption>
+                    <caption><b>Table 2: VS<i>Temporal</i>I-Bench Evaluation Results.</b> VLM-3R leads comprehensively...</caption>
                     <thead>
                         <tr>
-                            <th>Methods</th>
-                            <th>Rank</th>
-                            <th>Avg.</th>
+                            <th>Methods</th><th>Rank</th><th>Avg.</th>
                             <th style="background-color: #d4eaff;">Cam-Obj Abs. Dist.</th>
                             <th style="background-color: #d4eaff;">Cam. Displace.</th>
                             <th style="background-color: #c8e6c9;">Cam. Mov. Dir.</th>
@@ -589,12 +1207,10 @@
             <p>Ablation studies confirm that both geometric token fusion and camera token fusion are critical to VLM-3R's performance, especially in tasks reliant on scene structure and directional awareness. The overall 3D fusion mechanism also shows clear performance benefits.</p>
             <div class="table-container">
                 <table>
-                    <caption><b>Table 3: Ablation Study of VLM-3R Components on VSI-Bench.</b> Scores indicate percentage accuracy or MRA. The <strong>VLM-3R (Full Model)</strong> row is highlighted.</caption>
+                    <caption><b>Table 3: Ablation Study of VLM-3R Components on VSI-Bench.</b> Scores indicate percentage accuracy or MRA...</caption>
                      <thead>
                         <tr>
-                            <th>Methods</th>
-                            <th>Rank</th>
-                            <th>Avg.</th>
+                            <th>Methods</th><th>Rank</th><th>Avg.</th>
                             <th style="background-color: #d4eaff;">Obj. Count</th>
                             <th style="background-color: #d4eaff;">Abs. Dist.</th>
                             <th style="background-color: #d4eaff;">Obj. Size</th>
@@ -632,91 +1248,142 @@
             <h2>Citation</h2>
             <pre><code>@article{vlm3r2025yourname,
   title={VLM‑3R: Vision-Language Models Augmented with Instruction‑Aligned 3D Reconstruction},
-  author={Author One and Author Two and Author Three and et al.}, 
+  author={Author One and Author Two and Author Three and et al.},
   journal={Advances in Neural Information Processing Systems (NeurIPS)},
   year={2025}
 }</code></pre>
         </section>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/@babel/polyfill@7.12.1/dist/polyfill.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@5.16.0/dist/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-collection@1.0.7/dist/d3-collection.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js"></script>
+
     <script>
+        // 移除medium-zoom初始化
         document.addEventListener('DOMContentLoaded', () => {
-            // Smooth scroll for anchor links
+            const videos = document.querySelectorAll('.video-music');
+            videos.forEach(video => {
+                video.playbackRate = 2.0;
+            });
+        });
+
+        function switchVideo(prefix, videoId, previewIdToActivate) {
+            const videoContainers = document.querySelectorAll(`div[id^="${prefix}video"][class*="video-container"]`);
+            videoContainers.forEach(container => {
+                container.style.display = 'none';
+                const video = container.querySelector('video');
+                if (video) {
+                    video.currentTime = 0;
+                    video.pause();
+                }
+            });
+
+            const previews = document.querySelectorAll(`img[id^="${prefix}videoPreview"].preview`);
+            previews.forEach(preview => {
+                preview.classList.remove('preview-video-active');
+            });
+
+            const targetVideoContainer = document.getElementById(videoId);
+            if (targetVideoContainer) {
+                targetVideoContainer.style.display = 'block';
+            }
+
+            const targetPreview = document.getElementById(previewIdToActivate);
+            if (targetPreview) {
+                targetPreview.classList.add('preview-video-active');
+            }
+        }
+
+        function toggleAnswer(answerId, element) {
+            const answerElement = document.getElementById(answerId);
+            const isVisible = answerElement.style.display === "block";
+            if (isVisible) {
+                answerElement.style.display = "none";
+                element.innerHTML = '<i class="fas fa-eye"></i> Click for Answer';
+            } else {
+                answerElement.style.display = "block";
+                element.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Answer';
+            }
+        }
+
+        function handleVideoError(videoElement) {
+            const container = videoElement.closest('.video-container');
+            const errorDiv = container.querySelector('.video-error');
+            if (errorDiv) errorDiv.style.display = 'block';
+            console.error('Video loading error:', videoElement.src);
+        }
+
+        function handleVideoLoaded(videoElement) {
+            const container = videoElement.closest('.video-container');
+            const loadingDiv = container.querySelector('.video-loading');
+            if (loadingDiv) loadingDiv.style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 初始化第一个视频
+            const firstPreview = document.getElementById('VLM3Rvideo1Preview');
+            if (firstPreview) {
+                switchVideo('VLM3R', 'VLM3Rvideo1Container', 'VLM3Rvideo1Preview');
+            }
+
+            // 平滑滚动
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
                     const targetId = this.getAttribute('href');
                     const targetElement = document.querySelector(targetId);
                     if (targetElement) {
-                        // Using smooth behavior for scrolling
                         targetElement.scrollIntoView({ behavior: 'smooth' });
                     }
                 });
             });
 
-            // Intersection Observer for scroll animations
+            // 滚动动画
             const animatedElements = document.querySelectorAll('.scroll-animate');
-            const observerOptions = {
-                root: null, // relative to document viewport
-                rootMargin: '0px',
-                threshold: 0.1 // 10% of item is visible
-            };
-
+            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
             const observer = new IntersectionObserver((entries, observerInstance) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('is-visible');
-                        observerInstance.unobserve(entry.target); // Stop observing once visible
+                        observerInstance.unobserve(entry.target);
                     }
                 });
             }, observerOptions);
+            animatedElements.forEach(el => observer.observe(el));
 
-            animatedElements.forEach(el => {
-                observer.observe(el);
-            });
-
-            // Typewriter effect for the subtitle
+            // 打字机效果
             const subtitleElement = document.getElementById('typewriter-subtitle');
             if (subtitleElement) {
                 const fullText = subtitleElement.textContent;
-                subtitleElement.textContent = ''; // Clear initial text
+                subtitleElement.textContent = '';
                 let charIndex = 0;
-                // subtitleElement.style.borderRight = '.15em solid #cce7ff'; // REMOVED: Initial cursor
-
                 function typeCharacter() {
                     if (charIndex < fullText.length) {
                         subtitleElement.textContent += fullText.charAt(charIndex);
                         charIndex++;
-                        setTimeout(typeCharacter, 50); // CHANGED: Typing speed back to 50ms
-                    } else {
-                        // Typing finished
-                        // subtitleElement.style.animation = 'blinking-cursor .75s step-end infinite;'; // REMOVED: Blinking cursor animation
+                        setTimeout(typeCharacter, 50);
                     }
                 }
-                
-                // REMOVED: Dynamic keyframes for blinking cursor
-                /*
-                const styleSheet = document.styleSheets[0];
-                const keyframes = 
-                  `@keyframes blinking-cursor {
-                      from, to { border-right-color: transparent; }
-                      50% { border-right-color: #cce7ff; }
-                  }`;
-                if (styleSheet) {
-                    try {
-                        styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
-                    } catch (e) {
-                        console.warn("Could not insert blinking-cursor keyframes:", e);
-                    }
-                } else {
-                    const styleEl = document.createElement('style');
-                    styleEl.innerHTML = keyframes;
-                    document.head.appendChild(styleEl);
-                }
-                */
-
-                setTimeout(typeCharacter, 500); // Delay before typing starts
+                setTimeout(typeCharacter, 500);
             }
         });
+
+        function seekToFrame(frameElement, frameNumber) {
+            const videoContainer = frameElement.closest('.video-container');
+            const video = videoContainer.querySelector('video');
+            if (video) {
+                // 假设视频总时长为32秒，每帧1秒
+                const frameTime = frameNumber;
+                video.currentTime = frameTime;
+                video.play();
+            }
+        }
     </script>
 </body>
 </html>
