@@ -522,10 +522,22 @@
         <div class="container header-content">
             <h1>VLM-3R: Vision-Language Models Augmented with Instruction-Aligned 3D Reconstruction</h1>
             <p class="subtitle" id="typewriter-subtitle">A unified Vision-Language Model (VLM) framework integrating 3D reconstructive instruction tuning for deep spatial understanding from monocular video.</p>
-            <div class="teaser-image-container scroll-animate">
-                <img src="imgs/teaser_00.jpg" alt="VLM-3R Overview" data-custom-zoomable>
-                <p class="figure-caption"><b>Figure: VLM-3R Overview.</b> Our framework (b) utilizes an end-to-end architecture to process video directly, unlike prior methods (a) that rely on explicit 3D data. This enables the model to understand spatial context, instance layout, and temporal dynamics, achieving leading performance on benchmarks (results in c).</p>
+
+            <div class="architecture-video-container scroll-animate" style="margin-top: 15px; margin-bottom: 25px; /* Adjusted margins */ text-align: center; position: relative; transform-style: preserve-3d; perspective: 1000px;">
+                <video style="max-width: 85%; /* Or your preferred max-width */
+                              height: auto;
+                              border-radius: 10px;
+                              box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+                              cursor: pointer;"
+                       controls autoplay muted playsinline
+                       onmouseover="this.style.transform='translateZ(15px) rotateX(4deg)';"
+                       onmouseout="this.style.transform='none';">
+                    <source src="videos/arc-dynamic.mp4" type="video/mp4">
+                    Your browser does not support HTML5 video.
+                </video>
+                <p class="figure-caption" style="color: #e0f7fa; margin-top: 10px;"><b>Video: VLM-3R Architecture Overview.</b></p>
             </div>
+
             <div class="resource-buttons">
                 <a href="#abstract" class="button"><i class="fas fa-info-circle"></i> Abstract</a>
                 <a href="https://arxiv.org/abs/2403.xxxxx" class="button" target="_blank"><i class="fas fa-file-alt"></i> Paper (arXiv)</a>
@@ -548,6 +560,18 @@
         <section id="abstract" class="section scroll-animate">
             <h2>Abstract</h2>
             <p>The rapid advancement of Large Multimodal Models (LMMs) for 2D images and videos has motivated extending these models to understand 3D scenes, aiming for human-like visual-spatial intelligence. Nevertheless, achieving deep spatial understanding comparable to human capabilities poses significant challenges in model encoding and data acquisition. Existing methods frequently depend on external depth sensors for geometry capture or utilize off-the-shelf algorithms for pre-constructing 3D maps, thereby limiting their scalability, especially with prevalent monocular video inputs and for time-sensitive applications. In this work, we introduce VLM‑3R, a unified framework for Vision-Language Models (VLMs) that incorporates 3D Reconstructive instruction tuning. VLM‑3R processes monocular video frames by employing a geometry encoder to derive implicit 3D tokens that represent spatial understanding. Through the utilization of our Spatial-Visual–View Fusion technique and over 200K curated 3D reconstructive instruction tuning question-answer (QA) pairs, VLM‑3R effectively aligns real-world spatial context with language instructions. This enables the model to perform monocular 3D spatial assistance and embodied reasoning. To facilitate the evaluation of temporal reasoning capabilities, we introduce the Vision-Spatial-Temporal Intelligence benchmark, featuring over 138.6K QA pairs across five distinct tasks focused on evolving spatial relationships. Extensive experiments demonstrate that our model, VLM‑3R, not only promotes robust visual-spatial reasoning but is also capable of understanding 3D contextual changes over time, excelling in both accuracy and scalability.</p>
+        </section>
+
+        <section id="overview" class="section scroll-animate">
+            <h2>Overview</h2>
+            <div class="teaser-image-container" style="text-align: center; margin: 25px 0; position: relative; transform-style: preserve-3d; perspective: 1000px;">
+                <img src="imgs/teaser_00.jpg" alt="VLM-3R Overview" data-custom-zoomable
+                     style="max-width: 85%; /* Adjusted max-width */ height: auto; border-radius: 10px; box-shadow: 0 8px 16px rgba(0,0,0,0.25); cursor: pointer;"
+                     onmouseover="this.style.transform='translateZ(15px) rotateX(4deg)';"
+                     onmouseout="this.style.transform='none';">
+                <p class="figure-caption"> <b>Figure: VLM-3R Overview.</b> Our framework (b) utilizes an end-to-end architecture to process video directly, unlike prior methods (a) that rely on explicit 3D data. This enables the model to understand spatial context, instance layout, and temporal dynamics, achieving leading performance on benchmarks (results in c).
+                </p>
+            </div>
         </section>
 
         <section id="key-innovations" class="section key-innovations-section scroll-animate">
